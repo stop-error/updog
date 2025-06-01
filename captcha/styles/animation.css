@@ -1,0 +1,10 @@
+@keyframes startup-text-scroll {
+
+    0% {
+        top: -45px;
+    }
+
+    100% {
+        top: 126px
+    }
+}
