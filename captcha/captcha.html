@@ -22,19 +22,19 @@
       position: relative;
     }
 
-    /* #startup-text {
+     #startup-text {
       width: 100%;
       text-align: center;
-      position: absolute; */
-      /* top: -45px; */
+      position: absolute; 
+       top: -45px; 
 
-      /* animation-name: startup-text-scroll;
+      animation-name: startup-text-scroll;
       animation-timing-function: linear;
       animation-duration: 0.8s;
       animation-fill-mode: forwards;
       animation-direction: normal;
-      animation-iteration-count:1; */
-    /* } */
+      animation-iteration-count:1; 
+    }
 
   </style>
 </head>
@@ -42,10 +42,10 @@
 <body>
   <div id="captcha-container">
 
-    <!-- <div id="startup-text">
+    <div id="startup-text">
       <img src="images/startupText.png">
       <audio id="startup-tone" src="sounds/startupTone.mp3"></audio>
-    </div> -->
+    </div>
 
     <canvas></canvas>
 
@@ -68,17 +68,17 @@
       const gravity = .5
 
 
-      // startup_text.addEventListener("animationend", (event) => {
-      //   document.getElementById('startup-tone').play();
-      // });
+       startup_text.addEventListener("animationend", (event) => {
+         document.getElementById('startup-tone').play();
+       });
       
-      // setTimeout(() => {
-      //    startup_text.remove()
-      // }, "2500");
+       setTimeout(() => {
+          startup_text.remove()
+       }, "2500");
 
-      // setTimeout(() => {
-      //    canvas.removeAttribute("hidden")
-      // }, "2800");
+       setTimeout(() => {
+          canvas.removeAttribute("hidden")
+       }, "2800");
 
       
       class Player{
