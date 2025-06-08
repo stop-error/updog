@@ -513,15 +513,15 @@
 
           }
 
-        window.addEventListener("mousedown", () => {
+        // window.addEventListener("mousedown", () => {
 
-          if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
-            document.getElementById('jump').play();
-            player.velocity.y = -0.65
-          }
-        })
+        //   if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
+        //     document.getElementById('jump').play();
+        //     player.velocity.y = -0.65
+        //   }
+        // })
         
-        window.addEventListener("touchstart", () => {
+        window.addEventListener("pointerdown", () => {
            if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             document.getElementById('jump').play();
             player.velocity.y = -0.65
