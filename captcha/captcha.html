@@ -512,7 +512,7 @@
 
           }
 
-        window.addEventListener("mousedown", () => {
+        window.addEventListener("pointerdown", () => {
 
           if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             document.getElementById('jump').play();
@@ -520,12 +520,12 @@
           }
         })
         
-        window.addEventListener("touchstart", () => {
-           if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
-            document.getElementById('jump').play();
-            player.velocity.y = -0.65
-          }
-        })
+        // window.addEventListener("touchend", () => {
+        //    if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
+        //     document.getElementById('jump').play();
+        //     player.velocity.y = -0.65
+        //   }
+        // })
 
        
       }
