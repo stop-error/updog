@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
  
   <style type="text/css">
-    @import url(styles/animation.css);
     html,
     body {
       background: pink;
@@ -22,19 +21,10 @@
       position: relative;
     }
 
-    /* #startup-text {
-      width: 100%;
-      text-align: center;
-      position: absolute; */
-      /* top: -45px; */
-
-      /* animation-name: startup-text-scroll;
-      animation-timing-function: linear;
-      animation-duration: 0.8s;
-      animation-fill-mode: forwards;
-      animation-direction: normal;
-      animation-iteration-count:1; */
-    /* } */
+    @font-face {
+      font-family: "detectivesNDamesVariable";
+      src: url(fonts/detectivesNDamesVariable.ttf);
+    }
 
   </style>
 </head>
@@ -42,10 +32,16 @@
 <body>
   <div id="captcha-container">
 
-    <!-- <div id="startup-text">
-      <img src="images/startupText.png">
-      <audio id="startup-tone" src="sounds/startupTone.mp3"></audio>
-    </div> -->
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+
+    <audio id="startupTone" src="sounds/startupTone.mp3"></audio>
+    <audio id="jump" src="sounds/jump.mp3"></audio>
+    <audio id="bump" src="sounds/bump.mp3"></audio>
+    <audio id="death" src="sounds/death.mp3"></audio>
+    <audio id="win" src="sounds/win.mp3"></audio>
+    <audio id="uluvmiller" src="sounds/uluvmiller.mp3"></audio>
+
+    
 
     <canvas></canvas>
 
@@ -57,71 +53,491 @@
       function captchaSuccess() {
         window.top.postMessage("success", '*');
       }
-      //debugger;
-      // You are now about to witness the strength of street knowledge. 
-      const startup_text = document.getElementById('startup-text');
+
+      
+      // Alright I swear I'm better at programming than this, I just have a lot going on right now
       const canvas = document.querySelector("canvas");
       canvas.width = 386;
       canvas.height = 296;
       const context = canvas.getContext("2d");
+      context.filter = "blur(1.0px)";
+      let winHasRun = 0
 
-      const gravity = .5
+      let gravity = .003;
+
+      const bgMusic = new Howl({
+          src: ['sounds/bgMusic.ogg'],
+          autoplay: false,
+          loop: true
+        });
+
+      let animationRequestId;
 
 
-      // startup_text.addEventListener("animationend", (event) => {
-      //   document.getElementById('startup-tone').play();
-      // });
-      
-      // setTimeout(() => {
-      //    startup_text.remove()
-      // }, "2500");
-
-      // setTimeout(() => {
-      //    canvas.removeAttribute("hidden")
-      // }, "2800");
-
-      
-      class Player{
-        constructor(position) {
+      class Player {
+        constructor({position, imageSrc, width, height}) {
           this.position = position
+          this.image = new Image()
+          this.image.src = imageSrc
+          this.width = width
+          this.height = height
           this.velocity = {
             x: 0,
             y: 1,
           }
-          this.height = 15
         }
         draw() {
-          context.fillRect(this.position.x, this.position.y, 15, this.height);
-          console.log("y value is" + this.position.y)
+          if (!this.image) return
+          context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
         }
         update() {
           this.draw()
+          this.position.x += this.velocity.x
           this.position.y += this.velocity.y
-          if (this.position.y + this.height + this.velocity.y < canvas.height) 
-            this.velocity.y += gravity
-          else if (this.position.y + this.height >= canvas.height) {
-            this.position.y = canvas.height - this.height
-            velocity = 0
-          }
-
+          this.velocity.y += gravity
         }
       }
 
-      const player = new Player({
-        x: 192,
-        y:50,
-      })
-
-      function animate() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        window.requestAnimationFrame(animate)
-        player.update();
-        
+      class Sprite {
+        constructor({position, imageSrc, width, height}) {
+          this.position = position
+          this.image = new Image()
+          this.image.src = imageSrc
+          this.width = width
+          this.height = height
+          this.velocity = {
+            x: 0,
+            y: 0,
+          }
+        }
+        draw() {
+          if (!this.image) return
+          context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        }
+        update() {
+          this.draw()
+        }
       }
 
-      animate()
+      class Boundary  {
+        constructor({position, width, height}) {
+          this.position = position
+          this.width = width
+          this.height = height
+        }
+        draw() {
+          context.fillRect(this.position.x, this.position.y, this.width, this.height)
+        }
+        update() {
+          this.draw()
+        }
+      }
+
+      class PlatformMovingLeft {
+        constructor({position, imageSrc, width, height}) {
+          this.position = position
+          this.image = new Image()
+          this.image.src = imageSrc
+          this.width = width
+          this.height = height
+          this.velocity = {
+            x: -2.0,
+            y: 0,
+          }
+        }
+        draw() {
+          if (!this.image) return
+          context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        }
+        update() {
+          this.draw()
+
+          this.position.x += this.velocity.x
+
+          if (this.position.x + this.width <= 0) {
+            this.position.x = 386
+          }
+        }
+      }
 
 
+      class PlatformMovingRight {
+        constructor({position, imageSrc, width, height}) {
+          this.position = position
+          this.image = new Image()
+          this.image.src = imageSrc
+          this.width = width
+          this.height = height
+          this.velocity = {
+            x: 2.0,
+            y: 0,
+          }
+        }
+        draw() {
+          if (!this.image) return
+          context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        }
+        update() {
+          this.draw()
+
+          this.position.x += this.velocity.x
+
+          if (this.position.x >= 386) {
+            this.position.x = 0 - this.width
+          }
+        }
+      }
+
+
+      class SplashText {
+        constructor(text, font, position) {
+          this.text = text
+          this.font = font
+          this.position = position
+          this.scrollDone = 0
+        }
+        update() {
+          context.font = this.font
+          context.fillText(this.text, this.position.x, this.position.y);
+          if (this.position.y < 160) {
+            this.position.y += 3
+          } else {
+            this.scrollDone = 1
+          }
+        }
+      }
+
+
+      const splashText = new SplashText("Cloudysky", "45px detectivesNDamesVariable", {x:45, y:-10})
+
+      
+      function scrollSplashScreen() {
+        if (splashText.scrollDone == 0) {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          animationRequestId = window.requestAnimationFrame(scrollSplashScreen);
+          splashText.update()
+        }
+
+        else if (splashText.scrollDone == 1) {
+          window.cancelAnimationFrame(animationRequestId);
+          document.getElementById('startupTone').play();
+        }
+      }
+      
+      
+      scrollSplashScreen()
+   
+
+      //position, imageSrc, width, height
+      const player = new Player({
+        position: {
+          x:193, 
+          y:235,
+        }, 
+        width:19, 
+        height:17,
+        imageSrc: "./images/dog/dogNeutral.png" 
+      })
+
+      const bgCloud1 = new Sprite({
+        position: {
+          x:280,
+          y:70,
+        },
+        width: 68,
+        height: 28,
+        imageSrc: "./images/bgCloud.png"
+      })
+
+
+       const bgCloud2 = new Sprite({
+        position: {
+          x:50,
+          y:140,
+        },
+        width: 68,
+        height: 28,
+        imageSrc: "./images/bgCloud.png"
+      })
+
+
+      const ground = new Sprite({
+        position: {
+          x:170,
+          y:247,
+        },
+        width: 60,
+        height: 75,
+        imageSrc: "./images/ground.png"
+      })
+      
+
+      const waterA = new Sprite({
+        position: {
+          x:0,
+          y:255,
+        },
+        width: 180,
+        height: 60,
+        imageSrc: "./images/water.png"
+      })
+
+
+      const waterB = new Sprite({
+        position: {
+          x:177,
+          y:255,
+        },
+        width: 180,
+        height: 60,
+        imageSrc: "./images/water.png"
+      })
+
+
+      const waterC = new Sprite({
+        position: {
+         x:354,
+         y:255,
+        },
+        width: 180,
+        height: 60,
+        imageSrc: "./images/water.png"
+      })
+
+
+      const boundaryLeft = new Boundary({
+        position:{
+          x:0,
+          y:0,
+        },
+        width:1,
+        height:canvas.height
+      })
+
+
+      const boundaryRight = new Boundary({
+        position:{
+          x:386,
+          y:0,
+        },
+        width:1,
+        height:canvas.height
+      })
+
+
+      const platformA = new PlatformMovingLeft({
+        position: {
+          x:215,
+          y:210,
+        },
+        width:46,
+        height:14,
+        imageSrc: "./images/platform.png"
+      })
+
+      const platformB = new PlatformMovingRight({
+        position: {
+          x:120,
+          y:160,
+        },
+        width: 46,
+        height: 14,
+        imageSrc: "./images/platform.png"
+      })
+
+
+       const platformC = new PlatformMovingLeft({
+        position: {
+          x:240,
+          y:110,
+        },
+        width: 46,
+        height: 14,
+        imageSrc: "./images/platform.png"
+      })
+
+      const bone = new Sprite ({
+        position: {
+          x:176,
+          y:40,
+        },
+        width: 46,
+        height: 18,
+        imageSrc: "./images/bone.png"
+      })
+
+      const allWater = [waterA, waterB, waterC]
+      const allPlatform = [platformA, platformB, platformC]
+
+      function collision(box1, box2) {
+        return (
+          box1.position.x + box1.width >= box2.position.x && // box1 right collides with box2 left
+          box2.position.x + box2.width >= box1.position.x && // box2 right collides with box1 left
+          box1.position.y + box1.height >= box2.position.y && // box1 bottom collides with box2 top
+          box2.position.y + box2.height >= box1.position.y // box1 top collides with box2 bottom
+        )
+      }
+
+
+      function playWinSound () {
+        document.getElementById('win').play();
+      }
+
+      function win() {
+
+        if (winHasRun == 0) {
+          winHasRun = 1
+          context.clearRect(0, 0, canvas.width, canvas.height);
+        
+          bgMusic.stop()
+          context.font = "25px detectivesNDamesVariable"
+          context.fillText("YOU'RE WINNER!", 50, 150);
+          
+
+          document.getElementById('win').play();
+
+          setTimeout(() => {
+            document.getElementById('uluvmiller').play();
+          }, 4000);
+
+          setTimeout(() => {
+            captchaSuccess();
+          }, 6000);
+        } else {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+
+          context.font = "25px detectivesNDamesVariable"
+          context.fillText("YOU'RE WINNER!", 50, 150);
+          
+        }
+        
+
+
+      }
+
+      function startGame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        window.requestAnimationFrame(startGame)
+
+        bgCloud1.update();
+        bgCloud2.update();
+
+        boundaryLeft.update();
+        boundaryRight.update();
+
+        player.update();
+        
+        allPlatform.forEach((platform) => {
+            platform.update();
+          });
+        
+
+        allWater.forEach((water) => {
+            water.update();
+          });
+    
+        ground.update();
+        bone.update();
+
+
+        if (collision(player, ground)) {
+          player.velocity.y = 0
+          player.position.y = ground.position.y - player.height
+        }
+
+        if ((collision(player, waterA)) || (collision(player, waterB)) || (collision(player, waterC))) {
+          player.position = {x: 193, y: 235,}
+          //const delayDeathReset = new Promise(res => setTimeout(res, 1000));
+          document.getElementById('death').play();
+          player.velocity.x = 0
+          player.velocity.y = 0
+        }
+
+        if (collision(player, platformA)) {
+          if (player.position.y + player.height <= platformA.position.y + platformA.height) {
+              player.position.y = platformA.position.y - player.height
+              player.velocity.x = -2.0
+              player.velocity.y = 0
+            } else {
+              document.getElementById('bump').play();
+              player.velocity.y = 2
+            }
+          }
+
+
+        if (collision(player, platformC)) {
+          if (player.position.y + player.height <= platformC.position.y + platformC.height) {
+              player.position.y = platformC.position.y - player.height
+              player.velocity.x = -2.0
+              player.velocity.y = 0
+            } else {
+              document.getElementById('bump').play();
+              player.velocity.y = 2
+            }
+          }
+
+
+          if (collision(player, platformB)) {
+            if (player.position.y + player.height <= platformB.position.y + platformB.height) {
+              console.log("on platform B!")
+              player.position.y = platformB.position.y - player.height
+              player.velocity.x = 2.0
+              player.velocity.y = 0
+            } else {
+              document.getElementById('bump').play();
+              player.velocity.y = 2
+            }
+          }
+
+         
+          if (collision(player, boundaryLeft)) {
+            player.position.x = boundaryLeft.position.x + boundaryLeft.width
+          }
+
+          if (collision(player, boundaryRight)) {
+            player.position.x = boundaryRight.position.x - player.width
+          }
+          
+          if (collision(player, bone)) {
+            gravity = 0
+            player.velocity.x = 0
+            player.velocity.y = 0
+            window.cancelAnimationFrame(animationRequestId);
+            win()
+            
+
+          }
+
+        window.addEventListener("mousedown", () => {
+
+          if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
+            document.getElementById('jump').play();
+            player.velocity.y = -0.65
+          }
+
+        
+
+        })
+      }
+
+      function setupGame() {
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = "18px detectivesNDamesVariable"
+        context.fillText("TAP OR CLICK TO UP DOG!", 22, 160)
+      }
+
+
+
+
+      setTimeout(setupGame, 2300)
+     
+      setTimeout(() => {
+        bgMusic.play();
+        startGame();
+      }, 5300);
+
+    
     })(window, document);
   </script>
 </body>
