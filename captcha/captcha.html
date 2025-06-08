@@ -12,7 +12,7 @@
       margin: 0;
       padding: 0;
       font-family: sans-serif;
-      cursor:pointer;
+      cursor: pointer;
     }
 
     #captcha-container {
@@ -513,7 +513,7 @@
 
           }
 
-        window.addEventListener("pointerdown", () => {
+        window.addEventListener("mousedown", () => {
 
           if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             document.getElementById('jump').play();
@@ -521,12 +521,12 @@
           }
         })
         
-        // window.addEventListener("touchend", () => {
-        //    if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
-        //     document.getElementById('jump').play();
-        //     player.velocity.y = -0.65
-        //   }
-        // })
+        window.addEventListener("touchstart", () => {
+           if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
+            document.getElementById('jump').play();
+            player.velocity.y = -0.65
+          }
+        })
 
        
       }
