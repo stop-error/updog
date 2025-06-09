@@ -521,6 +521,7 @@
         // })
         
         window.addEventListener("pointerdown", () => {
+          console.log("pointerdown evet fired!")
            if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             document.getElementById('jump').play();
             player.velocity.y = -0.65
