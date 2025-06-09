@@ -67,7 +67,6 @@
       canvas.width = 386;
       canvas.height = 296;
       const context = canvas.getContext("2d");
-      //context.filter = "blur(1.0px)";
       let winHasRun = 0
 
       let gravity = .003;
@@ -139,6 +138,7 @@
           this.height = height
         }
         draw() {
+          context.fillStyle = 'rgba(225,225,225,0.0)'
           context.fillRect(this.position.x, this.position.y, this.width, this.height)
         }
         update() {
@@ -460,7 +460,6 @@
 
         if ((collision(player, waterA)) || (collision(player, waterB)) || (collision(player, waterC))) {
           player.position = {x: 193, y: 235,}
-          //const delayDeathReset = new Promise(res => setTimeout(res, 1000));
           document.getElementById('death').play();
           player.velocity.x = 0
           player.velocity.y = 0
@@ -492,7 +491,6 @@
 
           if (collision(player, platformB)) {
             if (player.position.y + player.height <= platformB.position.y + platformB.height) {
-              console.log("on platform B!")
               player.position.y = platformB.position.y - player.height
               player.velocity.x = 2.0
               player.velocity.y = 0
