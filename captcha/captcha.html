@@ -77,6 +77,7 @@
         const jump = new Howl({
           src: ['sounds/jump.mp3'],
           autoplay: false,
+          html5: true,
         });
 
       let animationRequestId;
@@ -528,17 +529,13 @@
           console.log("pointerdown evet fired!")
            if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             if (player.velocity.y == 0) {
-              playJump();
+              jump.play();
             }
             player.velocity.y = -0.65
           }
         })
 
        
-      }
-
-      function playJump() {
-        jump.play();
       }
 
       function setupGame() {
