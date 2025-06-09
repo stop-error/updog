@@ -26,6 +26,10 @@
       src: url(fonts/detectivesNDamesVariable.ttf);
     }
 
+    canvas {
+      filter:blur(1.0px)
+    }
+
   </style>
 </head>
 
@@ -63,7 +67,7 @@
       canvas.width = 386;
       canvas.height = 296;
       const context = canvas.getContext("2d");
-      context.filter = "blur(1.0px)";
+      //context.filter = "blur(1.0px)";
       let winHasRun = 0
 
       let gravity = .003;
