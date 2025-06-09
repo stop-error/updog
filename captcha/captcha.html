@@ -35,7 +35,6 @@
     <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
 
     <audio id="startupTone" src="sounds/startupTone.mp3"></audio>
-    <audio id="jump" src="sounds/jump.mp3"></audio>
     <audio id="bump" src="sounds/bump.mp3"></audio>
     <audio id="death" src="sounds/death.mp3"></audio>
     <audio id="win" src="sounds/win.mp3"></audio>
@@ -73,6 +72,11 @@
           src: ['sounds/bgMusic.ogg'],
           autoplay: false,
           loop: true
+        });
+
+        const jump = new Howl({
+          src: ['sounds/jump.mp3'],
+          autoplay: false,
         });
 
       let animationRequestId;
@@ -524,7 +528,7 @@
           console.log("pointerdown evet fired!")
            if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             if (player.velocity.y == 0) {
-              document.getElementById('jump').play();
+              jump.play();
             }
             player.velocity.y = -0.65
           }
