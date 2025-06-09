@@ -528,13 +528,17 @@
           console.log("pointerdown evet fired!")
            if ((collision(player, ground)) || (collision(player, platformA)) || (collision(player, platformB)) || (collision(player, platformC))){
             if (player.velocity.y == 0) {
-              jump.play();
+              playJump();
             }
             player.velocity.y = -0.65
           }
         })
 
        
+      }
+
+      function playJump() {
+        jump.play();
       }
 
       function setupGame() {
